@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>同步学单词</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -311,6 +311,7 @@
         <div class="result"></div>
         <button class="btn" id="tossBtn">开始抛硬币</button>
         <div class="slogan"></div>
+        <audio id="coinSound" src="coin.mp3" preload="auto"></audio>
     </div>
 
     <script>
@@ -320,6 +321,7 @@
             const slogan = document.querySelector('.slogan');
             const tossBtn = document.getElementById('tossBtn');
             const particlesContainer = document.querySelector('.particles');
+            const coinSound = document.getElementById('coinSound');
             let isAnimating = false;
             
             // 标语列表
@@ -477,6 +479,10 @@
             function tossCoin() {
                 if (isAnimating) return;
                 isAnimating = true;
+                
+                // 播放硬币音效
+                coinSound.currentTime = 0; // 重置音频播放位置
+                coinSound.play().catch(e => console.log('音频播放失败:', e));
                 
                 // 重置
                 coin.className = 'coin';
