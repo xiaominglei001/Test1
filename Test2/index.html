@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>倒计时选择器</title>
+    <title>番茄计时器</title>
     <style>
         * {
             margin: 0;
@@ -191,7 +191,7 @@
                 });
             });
 
-            // 太空背景及粒子/流星效果
+            // 太空背景及粒子效果
             const canvas = document.getElementById('space-background');
             const ctx = canvas.getContext('2d');
 
@@ -214,89 +214,42 @@
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: Math.random() * 2 + 0.5,
-                    speed: Math.random() * 0.5 + 0.1,
-                    brightness: Math.random() * 0.5 + 0.5
+                    size: Math.random() * 1.2 + 0.3, // 调小粒子尺寸
+                    speed: Math.random() * 0.15 + 0.05, // 降低速度
+                    brightness: Math.random() * 0.3 + 0.2, // 降低亮度
+                    breathPhase: Math.random() * Math.PI * 2 // 随机呼吸相位
                 });
-            }
-
-            // 流星
-            const meteors = [];
-            const meteorCount = 3; // 同时存在的流星数量上限
-
-            // 创建一个新流星
-            function createMeteor() {
-                if (meteors.length < meteorCount && Math.random() < 0.01) { // 1%的概率创建新流星
-                    meteors.push({
-                        x: Math.random() * canvas.width,
-                        y: 0,
-                        length: Math.random() * 150 + 50,
-                        speed: Math.random() * 10 + 5,
-                        angle: Math.random() * 20 + 10, // 角度（度）
-                        thickness: Math.random() * 3 + 1
-                    });
-                }
             }
 
             // 动画循环
             function animate() {
-                // 清除画布
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                // 清除画布，使用更低的透明度实现拖尾效果
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 获取当前时间用于呼吸效果
+                const time = Date.now() / 3000; // 呼吸周期约为3秒
 
                 // 绘制星星粒子
                 for (let i = 0; i < particles.length; i++) {
                     const p = particles[i];
 
+                    // 计算呼吸效果的亮度变化
+                    const breathEffect = Math.sin(time + p.breathPhase) * 0.1 + 0.9;
+                    
                     // 绘制星星
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255, 255, 255, ${p.brightness})`;
+                    ctx.arc(p.x, p.y, p.size * breathEffect, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.brightness * breathEffect})`;
                     ctx.fill();
 
-                    // 移动星星
-                    p.y += p.speed;
+                    // 缓慢移动星星
+                    p.y += p.speed * breathEffect;
 
                     // 如果星星移出画布底部，重新放置到顶部
                     if (p.y > canvas.height) {
                         p.y = 0;
                         p.x = Math.random() * canvas.width;
-                    }
-                }
-
-                // 尝试创建新流星
-                createMeteor();
-
-                // 绘制流星
-                for (let i = 0; i < meteors.length; i++) {
-                    const m = meteors[i];
-                    
-                    // 计算流星轨迹
-                    const angleRad = m.angle * Math.PI / 180;
-                    const tailX = m.x - Math.cos(angleRad) * m.length;
-                    const tailY = m.y + Math.sin(angleRad) * m.length;
-                    
-                    // 创建流星渐变
-                    const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
-                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                    
-                    // 绘制流星
-                    ctx.beginPath();
-                    ctx.moveTo(m.x, m.y);
-                    ctx.lineTo(tailX, tailY);
-                    ctx.lineWidth = m.thickness;
-                    ctx.strokeStyle = gradient;
-                    ctx.stroke();
-                    
-                    // 移动流星
-                    m.x += Math.cos(angleRad) * m.speed;
-                    m.y += Math.sin(angleRad) * m.speed;
-                    
-                    // 如果流星移出画布，从数组中移除
-                    if (m.y > canvas.height || m.x < 0 || m.x > canvas.width) {
-                        meteors.splice(i, 1);
-                        i--;
                     }
                 }
 
