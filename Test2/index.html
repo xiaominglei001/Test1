@@ -18,12 +18,26 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background-color: #f5f5f5;
+            background-color: #000;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
         
         h1 {
             margin-bottom: 40px;
-            color: #333;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            z-index: 1;
         }
         
         .timer-grid {
@@ -31,6 +45,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             max-width: 600px;
+            z-index: 1;
         }
         
         .timer-circle {
@@ -38,7 +53,7 @@
             width: 150px;
             height: 150px;
             border-radius: 50%;
-            background-color: #4CAF50;
+            background-color: rgba(76, 175, 80, 0.7);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -48,12 +63,13 @@
             font-weight: bold;
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(3px);
         }
         
         .timer-circle:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 15px rgba(255, 255, 255, 0.3);
         }
         
         .controls {
@@ -65,7 +81,7 @@
         }
         
         .btn {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.9);
             color: #333;
             border: none;
             width: 30px;
@@ -81,7 +97,7 @@
         }
         
         .btn:hover {
-            background-color: #eee;
+            background-color: #fff;
         }
         
         .timer-label {
@@ -89,13 +105,15 @@
             margin-top: 5px;
         }
         
-        #timer-25 { background-color: #4CAF50; }
-        #timer-45 { background-color: #2196F3; }
-        #timer-15 { background-color: #FF9800; }
-        #timer-5 { background-color: #F44336; }
+        #timer-25 { background-color: rgba(76, 175, 80, 0.7); }
+        #timer-45 { background-color: rgba(33, 150, 243, 0.7); }
+        #timer-15 { background-color: rgba(255, 152, 0, 0.7); }
+        #timer-5 { background-color: rgba(244, 67, 54, 0.7); }
     </style>
 </head>
 <body>
+    <canvas id="space-background"></canvas>
+    
     <h1>选择倒计时时间</h1>
     
     <div class="timer-grid">
@@ -172,6 +190,121 @@
                     window.location.href = `countdown.html?time=${minutes}`;
                 });
             });
+
+            // 太空背景及粒子/流星效果
+            const canvas = document.getElementById('space-background');
+            const ctx = canvas.getContext('2d');
+
+            // 设置canvas尺寸为窗口大小
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            // 当窗口调整大小时重置canvas尺寸
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            // 星星粒子
+            const particles = [];
+            const particleCount = 150;
+
+            // 创建星星粒子
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speed: Math.random() * 0.5 + 0.1,
+                    brightness: Math.random() * 0.5 + 0.5
+                });
+            }
+
+            // 流星
+            const meteors = [];
+            const meteorCount = 3; // 同时存在的流星数量上限
+
+            // 创建一个新流星
+            function createMeteor() {
+                if (meteors.length < meteorCount && Math.random() < 0.01) { // 1%的概率创建新流星
+                    meteors.push({
+                        x: Math.random() * canvas.width,
+                        y: 0,
+                        length: Math.random() * 150 + 50,
+                        speed: Math.random() * 10 + 5,
+                        angle: Math.random() * 20 + 10, // 角度（度）
+                        thickness: Math.random() * 3 + 1
+                    });
+                }
+            }
+
+            // 动画循环
+            function animate() {
+                // 清除画布
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // 绘制星星粒子
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+
+                    // 绘制星星
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${p.brightness})`;
+                    ctx.fill();
+
+                    // 移动星星
+                    p.y += p.speed;
+
+                    // 如果星星移出画布底部，重新放置到顶部
+                    if (p.y > canvas.height) {
+                        p.y = 0;
+                        p.x = Math.random() * canvas.width;
+                    }
+                }
+
+                // 尝试创建新流星
+                createMeteor();
+
+                // 绘制流星
+                for (let i = 0; i < meteors.length; i++) {
+                    const m = meteors[i];
+                    
+                    // 计算流星轨迹
+                    const angleRad = m.angle * Math.PI / 180;
+                    const tailX = m.x - Math.cos(angleRad) * m.length;
+                    const tailY = m.y + Math.sin(angleRad) * m.length;
+                    
+                    // 创建流星渐变
+                    const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+                    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+                    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    
+                    // 绘制流星
+                    ctx.beginPath();
+                    ctx.moveTo(m.x, m.y);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.lineWidth = m.thickness;
+                    ctx.strokeStyle = gradient;
+                    ctx.stroke();
+                    
+                    // 移动流星
+                    m.x += Math.cos(angleRad) * m.speed;
+                    m.y += Math.sin(angleRad) * m.speed;
+                    
+                    // 如果流星移出画布，从数组中移除
+                    if (m.y > canvas.height || m.x < 0 || m.x > canvas.width) {
+                        meteors.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                requestAnimationFrame(animate);
+            }
+
+            // 启动动画
+            animate();
         });
     </script>
 </body>
