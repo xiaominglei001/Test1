@@ -166,6 +166,44 @@
             opacity: 0;
             transition: opacity 0.5s ease;
         }
+        
+        .slogan {
+            margin: 20px auto 10px;
+            color: white;
+            font-size: 16px;
+            min-height: 20px;
+            max-width: 85%;
+            text-align: left;
+            padding-left: 5%;
+            position: relative;
+            font-style: italic;
+            animation: rainbowShadow 3s linear infinite;
+        }
+        
+        .slogan span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInUp 0.3s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes rainbowShadow {
+            0% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.9), 0 0 20px rgba(255, 0, 0, 0.5); color: #ffcccc; }
+            14% { text-shadow: 0 0 10px rgba(255, 127, 0, 0.9), 0 0 20px rgba(255, 127, 0, 0.5); color: #ffe0cc; }
+            28% { text-shadow: 0 0 10px rgba(255, 255, 0, 0.9), 0 0 20px rgba(255, 255, 0, 0.5); color: #ffffcc; }
+            42% { text-shadow: 0 0 10px rgba(0, 255, 0, 0.9), 0 0 20px rgba(0, 255, 0, 0.5); color: #ccffcc; }
+            56% { text-shadow: 0 0 10px rgba(0, 0, 255, 0.9), 0 0 20px rgba(0, 0, 255, 0.5); color: #ccccff; }
+            70% { text-shadow: 0 0 10px rgba(75, 0, 130, 0.9), 0 0 20px rgba(75, 0, 130, 0.5); color: #d8ccff; }
+            84% { text-shadow: 0 0 10px rgba(143, 0, 255, 0.9), 0 0 20px rgba(143, 0, 255, 0.5); color: #eaccff; }
+            100% { text-shadow: 0 0 10px rgba(255, 0, 0, 0.9), 0 0 20px rgba(255, 0, 0, 0.5); color: #ffcccc; }
+        }
 
         .particles {
             position: absolute;
@@ -263,7 +301,7 @@
 <body>
     <div class="particles"></div>
     <div class="container">
-        <h1>硬币决定器</h1>
+        <h1>硬币决策器</h1>
         <div class="coin-container">
             <div class="coin">
                 <div class="coin-front">正面</div>
@@ -272,15 +310,69 @@
         </div>
         <div class="result"></div>
         <button class="btn" id="tossBtn">开始抛硬币</button>
+        <div class="slogan"></div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const coin = document.querySelector('.coin');
             const result = document.querySelector('.result');
+            const slogan = document.querySelector('.slogan');
             const tossBtn = document.getElementById('tossBtn');
             const particlesContainer = document.querySelector('.particles');
             let isAnimating = false;
+            
+            // 标语列表
+            const slogans = [
+                "犹豫是时间的贼，行动是解药。",
+                "选错了可以修正，不选只会后悔。",
+                "完成比完美更重要，先做再优化。",
+                "两个选项都不差，停滞才是真风险。",
+                "跑得慢也好，原地不动最糟糕。",
+                "焦虑不在选择，而在迟迟不选。",
+                "没有绝对正确的路，只有你走出来的路。",
+                "选择困难，本质是害怕失去另一种可能。",
+                "放下'最优解'，拥抱'足够好'。",
+                "你担心的后果，80%不会发生。",
+                "如果难以抉择，说明选项差别不大——随便选！",
+                "硬币抛出的瞬间，你心里已有答案。",
+                "给选择设个时限：超过5分钟就随机定。",
+                "先选一个，如果错了，至少排除了一个错误选项。",
+                "信息不足时，行动就是最好的调查。",
+                "不做选择，就是让别人替你选。",
+                "人生没有标准答案，但有无数种精彩。",
+                "选A或B不重要，重要的是你如何让它变对。",
+                "害怕选错？错了也是经验，停了才是遗憾。",
+                "你不是在选择命运，而是在创造它。",
+                "花10分钟纠结，不如花5分钟行动。",
+                "拖延选择的时间，足够你完成一半。",
+                "时间不会等你，但行动可以追上时间。",
+                "早决定，早解脱，早进步。",
+                "纠结的每一秒，都是未来的你在叹气。",
+                "选A或B？反正宇宙最终会热寂，随便啦！",
+                "如果纠结到死，墓碑上会写：'此人一生在犹豫'。",
+                "选错顶多尴尬一阵子，不选会后悔一辈子。",
+                "你的大脑不是超级计算机，别让它跑死循环。",
+                "人生苦短，先选再说，大不了重开！"
+            ];
+            
+            // 页面加载时显示一条随机标语
+            const initialSloganIndex = Math.floor(Math.random() * slogans.length);
+            typeWriter(slogans[initialSloganIndex], slogan);
+            
+            // 打字机效果函数
+            function typeWriter(text, element, speed = 60) {
+                element.innerHTML = '';
+                
+                const chars = text.split('');
+                
+                chars.forEach((char, index) => {
+                    const span = document.createElement('span');
+                    span.textContent = char;
+                    span.style.animationDelay = `${index * 0.05}s`;
+                    element.appendChild(span);
+                });
+            }
 
             // 创建粒子效果
             function createParticles() {
@@ -390,6 +482,11 @@
                 coin.className = 'coin';
                 result.style.opacity = '0';
                 tossBtn.disabled = true;
+                
+                // 随机选择一条标语并显示
+                const randomSloganIndex = Math.floor(Math.random() * slogans.length);
+                const randomSlogan = slogans[randomSloganIndex];
+                typeWriter(randomSlogan, slogan);
                 
                 // 创建粒子效果
                 createParticles();
