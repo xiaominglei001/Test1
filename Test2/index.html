@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒计时选择器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+        
+        h1 {
+            margin-bottom: 40px;
+            color: #333;
+        }
+        
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            max-width: 800px;
+        }
+        
+        .timer-circle {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer-circle:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .controls {
+            position: absolute;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 20px;
+        }
+        
+        .btn {
+            background-color: white;
+            color: #333;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover {
+            background-color: #eee;
+        }
+        
+        .timer-label {
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        
+        #timer-25 { background-color: #4CAF50; }
+        #timer-45 { background-color: #2196F3; }
+        #timer-15 { background-color: #FF9800; }
+        #timer-5 { background-color: #F44336; }
+    </style>
+</head>
+<body>
+    <h1>选择倒计时时间</h1>
+    
+    <div class="timer-grid">
+        <div class="timer-circle" id="timer-25" data-time="25">
+            <div class="controls">
+                <button class="btn minus">-</button>
+                <button class="btn plus">+</button>
+            </div>
+            <div class="time-value">25</div>
+            <div class="timer-label">分钟</div>
+        </div>
+        
+        <div class="timer-circle" id="timer-45" data-time="45">
+            <div class="controls">
+                <button class="btn minus">-</button>
+                <button class="btn plus">+</button>
+            </div>
+            <div class="time-value">45</div>
+            <div class="timer-label">分钟</div>
+        </div>
+        
+        <div class="timer-circle" id="timer-15" data-time="15">
+            <div class="controls">
+                <button class="btn minus">-</button>
+                <button class="btn plus">+</button>
+            </div>
+            <div class="time-value">15</div>
+            <div class="timer-label">分钟</div>
+        </div>
+        
+        <div class="timer-circle" id="timer-5" data-time="5">
+            <div class="controls">
+                <button class="btn minus">-</button>
+                <button class="btn plus">+</button>
+            </div>
+            <div class="time-value">5</div>
+            <div class="timer-label">分钟</div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取所有时间圆形
+            const timerCircles = document.querySelectorAll('.timer-circle');
+            
+            timerCircles.forEach(circle => {
+                const timeValue = circle.querySelector('.time-value');
+                const plusBtn = circle.querySelector('.plus');
+                const minusBtn = circle.querySelector('.minus');
+                
+                // 点击加号按钮
+                plusBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    let time = parseInt(timeValue.textContent);
+                    time += 1;
+                    timeValue.textContent = time;
+                    circle.dataset.time = time;
+                });
+                
+                // 点击减号按钮
+                minusBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    let time = parseInt(timeValue.textContent);
+                    if (time > 1) {
+                        time -= 1;
+                        timeValue.textContent = time;
+                        circle.dataset.time = time;
+                    }
+                });
+                
+                // 点击圆形进入倒计时页面
+                circle.addEventListener('click', function() {
+                    const minutes = this.dataset.time;
+                    window.location.href = `countdown.html?time=${minutes}`;
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
