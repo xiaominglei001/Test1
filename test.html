@@ -198,6 +198,16 @@
             100% { transform: rotateY(0deg); }
         }
 
+        @keyframes fastSpin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(3600deg); }
+        }
+
+        @keyframes slowdown {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
         .tossing {
             animation: toss 1.5s ease-out forwards;
         }
@@ -207,7 +217,7 @@
         }
 
         .rolling {
-            animation: roll 0.8s ease-out, wobble 1s ease-out 0.8s;
+            animation: fastSpin 5s linear, slowdown 2s cubic-bezier(0.2, 0.8, 0.3, 1) 5s forwards;
         }
     </style>
 </head>
@@ -293,15 +303,21 @@
                 const random = Math.random();
                 const isHeads = random < 0.5;
                 
-                // 动画结束后立即弹跳并旋转
+                // 动画结束后设置旋转
                 setTimeout(() => {
                     coin.className = 'coin';
-                    coin.style.transform = isHeads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+                    // 清除可能存在的内联样式
+                    coin.style.transform = '';
                     
-                    // 立即添加弹跳和滚动效果
+                    // 添加旋转动画
                     requestAnimationFrame(() => {
-                        coin.classList.add('bouncing');
                         coin.classList.add('rolling');
+                        
+                        // 在动画即将结束时设置最终朝向
+                        setTimeout(() => {
+                            // 添加最终transform来显示结果
+                            coin.style.transform = isHeads ? 'rotateY(0deg)' : 'rotateY(180deg)';
+                        }, 6900); // 在结果显示前设置正确方向
                         
                         // 显示结果
                         setTimeout(() => {
@@ -309,7 +325,7 @@
                             result.style.opacity = '1';
                             isAnimating = false;
                             tossBtn.disabled = false;
-                        }, 1500);
+                        }, 7000);
                     });
                 }, 1500);
             }
