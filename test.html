@@ -54,6 +54,30 @@
             left: 25px;
             top: 25px;
         }
+        
+        .coin::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            opacity: 0;
+            z-index: -1;
+            transform: scale(0);
+            transition: transform 0.5s, opacity 0.5s;
+        }
+        
+        .tossing::before {
+            opacity: 0.7;
+            transform: scale(1.5);
+            animation: trailPulse 0.5s infinite alternate;
+        }
+        
+        @keyframes trailPulse {
+            0% { opacity: 0.3; transform: scale(1); }
+            100% { opacity: 0.7; transform: scale(1.5); }
+        }
 
         .coin-front, .coin-back {
             position: absolute;
@@ -160,17 +184,19 @@
         }
 
         @keyframes toss {
-            0% { transform: translateY(0) rotateX(0) rotateY(0); }
-            10% { transform: translateY(-100px) rotateX(720deg) rotateY(180deg); }
-            20% { transform: translateY(-200px) rotateX(1440deg) rotateY(360deg); }
-            30% { transform: translateY(-300px) rotateX(2160deg) rotateY(540deg); }
-            40% { transform: translateY(-380px) rotateX(2880deg) rotateY(720deg); }
-            50% { transform: translateY(-400px) rotateX(3600deg) rotateY(900deg); }
-            60% { transform: translateY(-380px) rotateX(4320deg) rotateY(1080deg); }
-            70% { transform: translateY(-300px) rotateX(5040deg) rotateY(1260deg); }
-            80% { transform: translateY(-200px) rotateX(5760deg) rotateY(1440deg); }
-            90% { transform: translateY(-100px) rotateX(6480deg) rotateY(1620deg); }
-            100% { transform: translateY(0) rotateX(7200deg) rotateY(1800deg); }
+            0% { transform: translateY(0) rotateX(0) rotateY(0) rotateZ(0) scale(1); filter: brightness(1) drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
+            5% { transform: translateY(-50px) rotateX(360deg) rotateY(90deg) rotateZ(45deg) scale(1.05); filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+            10% { transform: translateY(-100px) rotateX(720deg) rotateY(180deg) rotateZ(90deg) scale(1.1); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255,255,255,0.6)); }
+            20% { transform: translateY(-200px) rotateX(1440deg) rotateY(360deg) rotateZ(180deg) scale(1.15); filter: brightness(1.4) drop-shadow(0 0 20px rgba(255,255,255,0.7)); }
+            30% { transform: translateY(-300px) rotateX(2160deg) rotateY(540deg) rotateZ(270deg) scale(1.2); filter: brightness(1.5) drop-shadow(0 0 25px rgba(255,255,255,0.8)); }
+            40% { transform: translateY(-380px) rotateX(2880deg) rotateY(720deg) rotateZ(360deg) scale(1.25); filter: brightness(1.6) drop-shadow(0 0 30px rgba(255,255,255,0.9)); }
+            50% { transform: translateY(-400px) rotateX(3600deg) rotateY(900deg) rotateZ(450deg) scale(1.3); filter: brightness(1.7) drop-shadow(0 0 35px rgba(255,255,255,1)); }
+            60% { transform: translateY(-380px) rotateX(4320deg) rotateY(1080deg) rotateZ(540deg) scale(1.25); filter: brightness(1.6) drop-shadow(0 0 30px rgba(255,255,255,0.9)); }
+            70% { transform: translateY(-300px) rotateX(5040deg) rotateY(1260deg) rotateZ(630deg) scale(1.2); filter: brightness(1.5) drop-shadow(0 0 25px rgba(255,255,255,0.8)); }
+            80% { transform: translateY(-200px) rotateX(5760deg) rotateY(1440deg) rotateZ(720deg) scale(1.15); filter: brightness(1.4) drop-shadow(0 0 20px rgba(255,255,255,0.7)); }
+            90% { transform: translateY(-100px) rotateX(6480deg) rotateY(1620deg) rotateZ(810deg) scale(1.1); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255,255,255,0.6)); }
+            95% { transform: translateY(-50px) rotateX(6840deg) rotateY(1710deg) rotateZ(855deg) scale(1.05); filter: brightness(1.2) drop-shadow(0 0 10px rgba(255,255,255,0.5)); }
+            100% { transform: translateY(0) rotateX(7200deg) rotateY(1800deg) rotateZ(900deg) scale(1); filter: brightness(1) drop-shadow(0 0 5px rgba(255,255,255,0.3)); }
         }
 
         @keyframes bounce {
@@ -261,38 +287,99 @@
             // 创建粒子效果
             function createParticles() {
                 particlesContainer.innerHTML = '';
-                const particleCount = 50;
+                const particleCount = 100; // 增加粒子数量
                 
+                // 创建基础粒子
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
                     particle.classList.add('particle');
                     
-                    const size = Math.random() * 8 + 2;
+                    const size = Math.random() * 10 + 2; // 增加粒子大小
                     const posX = Math.random() * window.innerWidth;
                     const posY = Math.random() * window.innerHeight;
-                    const speedX = (Math.random() - 0.5) * 5;
-                    const speedY = (Math.random() - 0.5) * 5;
-                    const opacity = Math.random() * 0.5 + 0.3;
+                    const speedX = (Math.random() - 0.5) * 8; // 增加速度
+                    const speedY = (Math.random() - 0.5) * 8;
+                    const opacity = Math.random() * 0.7 + 0.3; // 增加不透明度
+                    const delay = Math.random() * 500; // 添加随机延迟
+                    
+                    // 随机选择粒子颜色
+                    const colors = ['rgba(255,255,255,', 'rgba(255,215,0,', 'rgba(255,255,0,', 'rgba(192,192,192,'];
+                    const color = colors[Math.floor(Math.random() * colors.length)];
                     
                     particle.style.width = `${size}px`;
                     particle.style.height = `${size}px`;
                     particle.style.left = `${posX}px`;
                     particle.style.top = `${posY}px`;
                     particle.style.opacity = opacity;
+                    particle.style.background = `${color}${opacity})`; // 设置随机颜色
+                    
+                    // 随机设置粒子形状
+                    if (Math.random() > 0.7) {
+                        particle.style.borderRadius = '0'; // 方形粒子
+                        particle.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    }
                     
                     particlesContainer.appendChild(particle);
                     
-                    // 粒子动画
+                    // 粒子动画，添加随机延迟
                     setTimeout(() => {
                         particle.style.transition = 'all 2s ease-out';
-                        particle.style.transform = `translate(${speedX * 50}px, ${speedY * 50}px)`;
+                        particle.style.transform = `translate(${speedX * 80}px, ${speedY * 80}px) rotate(${Math.random() * 360}deg)`;
                         particle.style.opacity = '0';
-                    }, 10);
+                    }, delay);
                     
                     // 移除粒子
                     setTimeout(() => {
                         particle.remove();
-                    }, 2000);
+                    }, 2000 + delay);
+                }
+                
+                // 创建闪光粒子
+                createSparkles();
+            }
+            
+            // 创建闪光效果
+            function createSparkles() {
+                const coinRect = coin.getBoundingClientRect();
+                const coinCenterX = coinRect.left + coinRect.width / 2;
+                const coinCenterY = coinRect.top + coinRect.height / 2;
+                
+                // 添加10个闪光
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const sparkle = document.createElement('div');
+                        sparkle.classList.add('particle');
+                        
+                        // 随机位置，但接近硬币
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = Math.random() * 150 + 50;
+                        const posX = coinCenterX + Math.cos(angle) * distance;
+                        const posY = coinCenterY + Math.sin(angle) * distance;
+                        
+                        // 样式设置
+                        sparkle.style.width = `${Math.random() * 15 + 5}px`;
+                        sparkle.style.height = `${Math.random() * 15 + 5}px`;
+                        sparkle.style.left = `${posX}px`;
+                        sparkle.style.top = `${posY}px`;
+                        sparkle.style.opacity = '1';
+                        sparkle.style.background = 'rgba(255,255,255,0.9)';
+                        sparkle.style.boxShadow = '0 0 20px 5px rgba(255,255,255,0.8)';
+                        sparkle.style.borderRadius = '50%';
+                        
+                        particlesContainer.appendChild(sparkle);
+                        
+                        // 闪光动画
+                        requestAnimationFrame(() => {
+                            sparkle.style.transition = 'all 0.5s ease-out';
+                            sparkle.style.transform = 'scale(0)';
+                            sparkle.style.opacity = '0';
+                        });
+                        
+                        // 移除闪光
+                        setTimeout(() => {
+                            sparkle.remove();
+                        }, 500);
+                    }, Math.random() * 1500); // 随机时间内创建闪光
                 }
             }
 
