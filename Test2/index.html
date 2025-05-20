@@ -62,14 +62,12 @@
             font-size: 36px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+            transition: transform 0.2s;
             backdrop-filter: blur(3px);
         }
         
         .timer-circle:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 15px rgba(255, 255, 255, 0.3);
         }
         
         .controls {
@@ -109,6 +107,31 @@
         #timer-45 { background-color: rgba(33, 150, 243, 0.7); }
         #timer-15 { background-color: rgba(255, 152, 0, 0.7); }
         #timer-5 { background-color: rgba(244, 67, 54, 0.7); }
+        
+        .instructions {
+            margin-top: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: left;
+            max-width: 600px;
+            backdrop-filter: blur(3px);
+            z-index: 1;
+            position: relative;
+        }
+        
+        .instructions p {
+            margin: 8px 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+        
+        .instructions p:first-child {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 12px;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -153,11 +176,19 @@
             <div class="timer-label">分钟</div>
         </div>
     </div>
+    
+    <div class="instructions">
+        <p>📌 使用说明：</p>
+        <p>• 点击圆形中心区域 → 进入倒计时页面</p>
+        <p>• 点击 + / - 按钮 → 调整倒计时时间</p>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // 获取所有时间圆形
             const timerCircles = document.querySelectorAll('.timer-circle');
+            // 添加点击锁定变量
+            let isNavigating = false;
             
             timerCircles.forEach(circle => {
                 const timeValue = circle.querySelector('.time-value');
@@ -186,6 +217,15 @@
                 
                 // 点击圆形进入倒计时页面
                 circle.addEventListener('click', function() {
+                    // 如果已经在导航中，则忽略此次点击
+                    if (isNavigating) return;
+                    
+                    // 设置导航锁定
+                    isNavigating = true;
+                    
+                    // 添加视觉反馈
+                    this.style.opacity = '0.7';
+                    
                     const minutes = this.dataset.time;
                     window.location.href = `countdown.html?time=${minutes}`;
                 });
